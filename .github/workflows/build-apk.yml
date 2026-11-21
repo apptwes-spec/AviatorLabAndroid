@@ -29,9 +29,15 @@ jobs:
       - name: Extract project
         run: unzip -q AviatorLabAndroid_Project.zip -d extracted
 
-      - name: Build APK
+      - name: Find project and fix Java version
         run: |
           PROJECT_DIR=$(dirname "$(find extracted -name settings.gradle.kts -print -quit)")
+          sed -i 's/VERSION_1_8/VERSION_17/g' "$PROJECT_DIR/app/build.gradle.kts"
+          echo "$PROJECT_DIR" > project_path.txt
+
+      - name: Build APK
+        run: |
+          PROJECT_DIR=$(cat project_path.txt)
           cd "$PROJECT_DIR"
           gradle --no-daemon assembleDebug
 
